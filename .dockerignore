@@ -1,0 +1,15 @@
+.git
+.gitignore
+.idea
+.env
+.env.*
+node_modules
+src/generated
+data
+*.db
+*.db-shm
+*.db-wal
+compose*.yaml
+Dockerfile
+.dockerignore
+README.md
