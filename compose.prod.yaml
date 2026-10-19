@@ -1,6 +1,6 @@
 services:
   bot:
-    image: ghcr.io/your-github-username/mc_link:latest
+    image: ghcr.io/pepijn-db/mc-dc-link:latest
     restart: unless-stopped
     env_file:
       - .env
@@ -13,7 +13,7 @@ services:
         condition: service_healthy
 
   migrate:
-    image: ghcr.io/your-github-username/mc_link:latest
+    image: ghcr.io/pepijn-db/mc-dc-link:latest
     restart: "no"
     env_file:
       - .env
