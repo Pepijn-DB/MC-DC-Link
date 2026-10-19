@@ -66,6 +66,10 @@ export async function generateEmbed(
             name: "Whitelisted Users",
             value: userList,
         })
+        .addFields({
+            name: "Note",
+            value: ":octagonal_sign: Permission to stop/restart server.",
+        })
         .setColor(Colors.Yellow)
         .setFooter({
             text: `Updated at ${now.toLocaleString("nl-NL")}`,
