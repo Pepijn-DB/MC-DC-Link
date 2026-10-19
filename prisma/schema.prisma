@@ -1,0 +1,25 @@
+generator client {
+	provider = "prisma-client"
+	output   = "../src/generated/prisma"
+	runtime  = "bun"
+}
+
+datasource db {
+	provider = "postgresql"
+}
+
+model Guild {
+	id                Int      @id @default(autoincrement())
+	discordId         String   @unique @map("discord_id")
+	channelId				 	String?  @map("channel_id")
+	embedId           String?  @map("embed_url")
+
+	@@map("guilds")
+}
+
+model MinecraftUser {
+	id             Int    @id @default(autoincrement())
+	uuid           String @unique
+	lowercaseName  String @unique @map("lowercase_name")
+	normalizedName String @unique @map("normalized_name")
+}
