@@ -153,7 +153,12 @@ async function createEmbed(interaction: ChatInputCommandInteraction): Promise<vo
         return;
     }
 
-    const embedMessage = await channel.send({ embeds: [await generateEmbed(interaction)] });
+    const embedMessage = await channel.send({
+        embeds: [await generateEmbed(interaction)],
+        allowedMentions: {
+            users: [],
+        },
+    });
 
     await interaction.editReply({
         content: "Whitelist embed created successfully.",
@@ -164,7 +169,7 @@ async function createEmbed(interaction: ChatInputCommandInteraction): Promise<vo
         return;
     }
 
-    prisma.guild.create({
+    await prisma.guild.create({
         data: {
             discordId: interaction.guildId,
             channelId: channel.id,
