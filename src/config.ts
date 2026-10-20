@@ -12,15 +12,11 @@ function setConfig(next: config): void {
 }
 
 function initEnv(): void {
-	if (process.env.DISCORD_TOKEN == undefined) {
-		throw new ConfigurationError("Discord token is missing!");
-	} else if (process.env.LUCKPERMS_URL == undefined) {
-		throw new ConfigurationError("LuckPerms URL is missing!");
-	} else if (process.env.OWNER_ID == undefined) {
-		throw new ConfigurationError("Owner ID is missing!");
-	} else if (process.env.CLIENT_ID == undefined) {
-		throw new ConfigurationError("Client ID is missing!");
-	}
+	if (process.env.DISCORD_TOKEN == undefined) throw new ConfigurationError("Discord token is missing!");
+	else if (process.env.LUCKPERMS_URL == undefined) throw new ConfigurationError("LuckPerms URL is missing!");
+	else if (process.env.OWNER_ID == undefined) throw new ConfigurationError("Owner ID is missing!");
+	else if (process.env.CLIENT_ID == undefined) throw new ConfigurationError("Client ID is missing!");
+
 	setConfig({
 		token: process.env.DISCORD_TOKEN,
 		luckpermsUrl: process.env.LUCKPERMS_URL,
