@@ -2,6 +2,7 @@
 import getConfig from "../src/config.ts";
 import type {
     LuckPermsUser,
+    LuckPermsUserLookup,
     LuckPermsUserSearchResult,
 } from "./types/luckperms.ts";
 import {getMinecraftProfiles} from "./minecraftHttp.ts";
@@ -158,7 +159,7 @@ export async function addUserToGroup(
     return true;
 }
 
-export async function getUserFromUsername(username: string): Promise<LuckPermsUser | null> {
+export async function getUserFromUsername(username: string): Promise<LuckPermsUserLookup | null> {
     const response = await luckpermsHTTPRequest(
         `user/lookup?username=${encodeURIComponent(username)}`,
     );
@@ -170,6 +171,35 @@ export async function getUserFromUsername(username: string): Promise<LuckPermsUs
     } else if (response.status === 404) {
         return null;
     } else {
+        return (await response.json()) as LuckPermsUserLookup;
+    }
+}
+
+export async function getUserFromUuid(uuid: string): Promise<LuckPermsUser | null> {
+    const response = await luckpermsHTTPRequest(
+        `user/${uuid}`,
+    );
+
+    if (!response.ok && !(response.status === 404)) {
+        throw new Error(
+            `Failed to fetch LuckPerms user ${uuid}: ${response.status} ${response.statusText}`,
+        );
+    } else if (response.status === 404) {
+        return null;
+    } else {
         return (await response.json()) as LuckPermsUser;
     }
+}
+
+export async function addNodeToUser(uuid: string, node: {key: string, value: boolean}): Promise<boolean> {
+    const response = await fetch(`${getConfig().luckpermsUrl}/user/${uuid}/nodes`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(node),
+    });
+
+    return response.ok;
+
 }

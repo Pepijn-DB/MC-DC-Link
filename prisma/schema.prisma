@@ -22,4 +22,5 @@ model MinecraftUser {
 	uuid           String @unique
 	lowercaseName  String @unique @map("lowercase_name")
 	normalizedName String @unique @map("normalized_name")
+	discordid			 String? @unique @map("discord_id")
 }

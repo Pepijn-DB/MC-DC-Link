@@ -4,13 +4,6 @@ import {prisma} from "./db.ts";
 const normalizeUuid = (uuid: string): string =>
     uuid.replaceAll("-", "").toLowerCase();
 
-interface MinecraftUser {
-    id: number
-    uuid: string
-    lowercaseName: string
-    normalizedName: string
-}
-
 export async function isValidMinecraftUsername(username: string): Promise<boolean | null> {
     const response: Response = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`);
     return response.status === 200
@@ -38,7 +31,7 @@ export async function getMinecraftProfilesBatch(
         },
     });
 
-    const cachedUuids = new Set(cachedUsers.map((user:MinecraftUser) => normalizeUuid(user.uuid)));
+    const cachedUuids = new Set(cachedUsers.map((user) => normalizeUuid(user.uuid)));
     const missingUuids = uniqueUuids.filter((uuid) => !cachedUuids.has(uuid));
 
     const resolvedProfiles = await Promise.all(
@@ -84,12 +77,13 @@ export async function getMinecraftProfilesBatch(
                 uuid: profile.id.toLowerCase(),
                 lowercaseName: profile.name.toLowerCase(),
                 normalizedName: profile.name,
+                discordid: "",
             })),
             skipDuplicates: true,
         });
     }
 
-    const cachedProfiles = cachedUsers.map((user:MinecraftUser) => ({
+    const cachedProfiles = cachedUsers.map((user) => ({
         id: user.uuid,
         name: user.normalizedName,
     }));
