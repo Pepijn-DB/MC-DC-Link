@@ -1,4 +1,13 @@
-import {type APIEmbed, Colors, EmbedBuilder, type Interaction, type Message} from "discord.js";
+import {
+    type APIEmbed,
+    type Channel,
+    Colors,
+    EmbedBuilder,
+    type Interaction,
+    type Message,
+    type TextBasedChannel,
+    ChannelType, type TextChannel
+} from "discord.js";
 import {prisma} from "../lib/db.ts";
 import {client} from "./index.ts";
 import {getUsersFromGroup, getUsersOnWhitelist} from "../lib/luckpermsHttp.ts";
@@ -16,7 +25,23 @@ export async function updateEmbed(interaction: Interaction): Promise<void> {
         },
     });
 
-    if (!guild) throw new Error("Guild not found.");
+    if (!guild) {
+        await (client.channels.cache.get(interaction.channelId) as TextChannel)
+            .send({
+                embeds: [await generateEmbed(interaction)]
+            });
+
+        await prisma.guild.create({
+            data: {
+                discordId: interaction.guildId,
+                channelId: interaction.channelId,
+            },
+        });
+
+        return;
+    }
+
+
     if (!guild.channelId) throw new Error("Guild channel not found.");
 
     const channel = await client.channels.fetch(guild.channelId);
