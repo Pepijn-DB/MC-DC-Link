@@ -35,7 +35,7 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
 		}
 	}
 	try {
-		await updateEmbed(interaction);
+		if(interaction.commandName !== "whitelist embed") await updateEmbed(interaction);
 	} catch (error) {
 		console.error("Failed to update embed:", error);
 	}
