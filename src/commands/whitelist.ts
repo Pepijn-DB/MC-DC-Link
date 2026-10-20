@@ -32,7 +32,7 @@ export const data = new SlashCommandBuilder()
     )
     .addSubcommand((subcommand) =>
         subcommand
-            .setName("createEmbed")
+            .setName("embed")
             .setDescription("Create the whitelist embed in this channel")
     )
 
@@ -42,7 +42,7 @@ export async function execute(
     switch (interaction.options.getSubcommand()) {
         case "add":
             await addUser(interaction); break;
-        case "createEmbed":
+        case "embed":
             await createEmbed(interaction); break;
 
     }
