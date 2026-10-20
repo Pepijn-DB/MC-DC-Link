@@ -4,12 +4,15 @@ import {prisma} from "./db.ts";
 const normalizeUuid = (uuid: string): string =>
     uuid.replaceAll("-", "").toLowerCase();
 
-async function MinecraftHTTPRequest(username: string): Promise<Response> {
-    return fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`);
+interface MinecraftUser {
+    id: number
+    uuid: string
+    lowercaseName: string
+    normalizedName: string
 }
 
-export async function validateMinecraftUsername(username: string): Promise<boolean | null> {
-    const response: Response = await MinecraftHTTPRequest(username);
+export async function isValidMinecraftUsername(username: string): Promise<boolean | null> {
+    const response: Response = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`);
     return response.status === 200
         ? true
         : response.status === 404
@@ -22,9 +25,7 @@ export async function getMinecraftProfilesBatch(
 ): Promise<MinecraftProfile[]> {
     const uniqueUuids = [...new Set(uuids.map(normalizeUuid))];
 
-    if (uniqueUuids.length === 0) {
-        return [];
-    }
+    if (uniqueUuids.length === 0) return [];
 
     const cachedUsers = await prisma.minecraftUser.findMany({
         where: {
@@ -37,7 +38,7 @@ export async function getMinecraftProfilesBatch(
         },
     });
 
-    const cachedUuids = new Set(cachedUsers.map((user) => normalizeUuid(user.uuid)));
+    const cachedUuids = new Set(cachedUsers.map((user:MinecraftUser) => normalizeUuid(user.uuid)));
     const missingUuids = uniqueUuids.filter((uuid) => !cachedUuids.has(uuid));
 
     const resolvedProfiles = await Promise.all(
@@ -88,7 +89,7 @@ export async function getMinecraftProfilesBatch(
         });
     }
 
-    const cachedProfiles = cachedUsers.map((user) => ({
+    const cachedProfiles = cachedUsers.map((user:MinecraftUser) => ({
         id: user.uuid,
         name: user.normalizedName,
     }));
