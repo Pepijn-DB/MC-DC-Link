@@ -80,7 +80,7 @@ export async function execute(
                         update: {
                             discordid: interaction.user.id
                         },
-                        where: {uuid: user.uniqueId}
+                        where: {lowercaseName: username.toLowerCase()}
                     });
                 });
 
