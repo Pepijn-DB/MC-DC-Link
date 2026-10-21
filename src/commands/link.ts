@@ -61,7 +61,7 @@ export async function execute(
         return;
     }
 
-    for (const node of user.nodes.filter(f => f.type === "meta" && f.key.includes("meta.discord_verification_code"))) {
+    for (const node of user.nodes.filter(f => f.key.includes("meta.discord_verification_code"))) {
         if (node.key.includes(verificationCode)) {
             if (await addNodeToUser(user.uniqueId, {key: `meta.discord_account.${interaction.user.id}`, value: true})) {
                 await interaction.reply({
