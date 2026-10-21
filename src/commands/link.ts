@@ -66,10 +66,6 @@ export async function execute(
             if (await addNodeToUser(user.uniqueId, {key: `meta.discord_account.${interaction.user.id}`, value: true})) {
                 if (!user.username) continue;
 
-                await interaction.reply({
-                    content: "Account linked successfully.",
-                    flags: MessageFlags.Ephemeral,
-                });
 
                 await getMinecraftProfiles([user.username]).then(async (profiles) => {
                     const profile = profiles[0];
@@ -86,6 +82,11 @@ export async function execute(
                         },
                         where: {uuid: user.uniqueId}
                     });
+                });
+
+                await interaction.reply({
+                    content: "Account linked successfully.",
+                    flags: MessageFlags.Ephemeral,
                 });
             } else {
                 await interaction.reply({
