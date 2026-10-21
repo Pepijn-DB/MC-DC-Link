@@ -8,7 +8,7 @@ import {
     getUserFromUsername, getUserFromUuid,
 } from "../../lib/luckpermsHttp.ts";
 import {prisma} from "../../lib/db.ts";
-import {isValidMinecraftUsername} from "../../lib/minecraftHttp.ts";
+import {getMinecraftProfiles, isValidMinecraftUsername} from "../../lib/minecraftHttp.ts";
 
 export const data = new SlashCommandBuilder()
     .setName("link")
@@ -64,14 +64,28 @@ export async function execute(
     for (const node of user.nodes.filter(f => f.key.includes("meta.discord_verification_code"))) {
         if (node.key.includes(verificationCode)) {
             if (await addNodeToUser(user.uniqueId, {key: `meta.discord_account.${interaction.user.id}`, value: true})) {
+                if (!user.username) continue;
+
                 await interaction.reply({
                     content: "Account linked successfully.",
                     flags: MessageFlags.Ephemeral,
                 });
 
-                await prisma.minecraftUser.update({
-                    where: { uuid: user.uniqueId },
-                    data: { discordid: interaction.user.id }
+                await getMinecraftProfiles([user.username]).then(async (profiles) => {
+                    const profile = profiles[0];
+                    if (!profile) return;
+                    await prisma.minecraftUser.upsert({
+                        create: {
+                            uuid: user.uniqueId,
+                            lowercaseName: username.toLowerCase(),
+                            normalizedName: profile.name || username,
+                            discordid: interaction.user.id
+                        },
+                        update: {
+                            discordid: interaction.user.id
+                        },
+                        conflictOn: {uuid: user.uniqueId}
+                    });
                 });
             } else {
                 await interaction.reply({
