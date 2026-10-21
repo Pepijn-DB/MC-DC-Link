@@ -84,7 +84,7 @@ export async function execute(
                         update: {
                             discordid: interaction.user.id
                         },
-                        conflictOn: {uuid: user.uniqueId}
+                        where: {uuid: user.uniqueId}
                     });
                 });
             } else {
